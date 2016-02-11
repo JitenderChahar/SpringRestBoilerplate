@@ -14,6 +14,7 @@ public class SimpleCORSFilter implements Filter {
 	
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {	
+		System.out.println("------------------CORS Filter----------------------");
 		HttpServletResponse httpResponse = (HttpServletResponse) response;		
 		httpResponse.addHeader("Access-Control-Allow-Origin", "*");
 		httpResponse.addHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE");

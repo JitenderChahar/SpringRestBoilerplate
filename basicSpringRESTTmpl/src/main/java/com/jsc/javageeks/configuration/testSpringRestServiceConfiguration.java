@@ -18,4 +18,5 @@ public class testSpringRestServiceConfiguration extends WebMvcConfigurerAdapter 
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(new SecurityInterceptor());
 	}
+	
 }
