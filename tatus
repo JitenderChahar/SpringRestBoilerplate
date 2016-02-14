@@ -1,0 +1,75 @@
+[1mdiff --git a/basicSpringRESTTmpl/pom.xml b/basicSpringRESTTmpl/pom.xml[m
+[1mindex cf7edf7..ac4e874 100644[m
+[1m--- a/basicSpringRESTTmpl/pom.xml[m
+[1m+++ b/basicSpringRESTTmpl/pom.xml[m
+[36m@@ -54,6 +54,11 @@[m
+ 			<artifactId>jackson-databind</artifactId>[m
+ 			<version>2.4.1</version>[m
+ 		</dependency>[m
+[32m+[m		[32m<dependency>[m
+[32m+[m			[32m<groupId>commons-codec</groupId>[m
+[32m+[m			[32m<artifactId>commons-codec</artifactId>[m
+[32m+[m			[32m<version>1.4</version>[m
+[32m+[m		[32m</dependency>[m
+ 	</dependencies>[m
+ 	<build>[m
+ 		<plugins>[m
+[1mdiff --git a/basicSpringRESTTmpl/src/main/java/com/jsc/javageeks/configuration/testSpringRestServiceConfiguration.java b/basicSpringRESTTmpl/src/main/java/com/jsc/javageeks/configuration/testSpringRestServiceConfiguration.java[m
+[1mindex db43920..79aca0b 100644[m
+[1m--- a/basicSpringRESTTmpl/src/main/java/com/jsc/javageeks/configuration/testSpringRestServiceConfiguration.java[m
+[1m+++ b/basicSpringRESTTmpl/src/main/java/com/jsc/javageeks/configuration/testSpringRestServiceConfiguration.java[m
+[36m@@ -18,5 +18,5 @@[m [mpublic class testSpringRestServiceConfiguration extends WebMvcConfigurerAdapter[m
+ 	public void addInterceptors(InterceptorRegistry registry) {[m
+ 		registry.addInterceptor(new SecurityInterceptor());[m
+ 	}[m
+[31m-	[m
+[32m+[m
+ }[m
+[1mdiff --git a/basicSpringRESTTmpl/src/main/java/com/jsc/javageeks/exception/GlobalExceptionHander.java b/basicSpringRESTTmpl/src/main/java/com/jsc/javageeks/exception/GlobalExceptionHander.java[m
+[1mindex 493a714..c8669bb 100644[m
+[1m--- a/basicSpringRESTTmpl/src/main/java/com/jsc/javageeks/exception/GlobalExceptionHander.java[m
+[1m+++ b/basicSpringRESTTmpl/src/main/java/com/jsc/javageeks/exception/GlobalExceptionHander.java[m
+[36m@@ -6,8 +6,6 @@[m [mimport org.springframework.web.bind.annotation.ControllerAdvice;[m
+ import org.springframework.web.bind.annotation.ExceptionHandler;[m
+ import org.springframework.web.servlet.NoHandlerFoundException;[m
+ [m
+[31m-import com.fasterxml.jackson.core.JsonProcessingException;[m
+[31m-import com.fasterxml.jackson.databind.ObjectMapper;[m
+ import com.jsc.javageeks.model.ErrorResponse;[m
+ [m
+ @ControllerAdvice[m
+[36m@@ -16,17 +14,17 @@[m [mpublic class GlobalExceptionHander /* extends ResponseEntityExceptionHandler */{[m
+ 	@ExceptionHandler(value = NotAuthenticateException.class)[m
+ 	public ResponseEntity<ErrorResponse> handleNotAutenticatedException([m
+ 			NotAuthenticateException ex) {[m
+[31m-		ErrorResponse errorMessage = new ErrorResponse("FORBIDDEN",[m
+[32m+[m		[32mErrorResponse errorMessage = new ErrorResponse("UNAUTHORIZED",[m
+ 				ex.getMessage());[m
+ 		return new ResponseEntity<ErrorResponse>(errorMessage,[m
+[31m-				HttpStatus.FORBIDDEN);[m
+[32m+[m				[32mHttpStatus.UNAUTHORIZED);[m
+ 	}[m
+ [m
+ 	@ExceptionHandler(value = NullPointerException.class)[m
+ 	public ResponseEntity<ErrorResponse> handleNULLPointerException([m
+ 			NullPointerException ex) {[m
+ 		ErrorResponse errorMessage = new ErrorResponse("Something went wrong",[m
+[31m-				ex.getMessage());[m
+[32m+[m				[32m"Null Pointer");[m
+ 		return new ResponseEntity<ErrorResponse>(errorMessage,[m
+ 				HttpStatus.INTERNAL_SERVER_ERROR);[m
+ 	}[m
+[1mdiff --git a/basicSpringRESTTmpl/src/main/java/com/jsc/javageeks/interceptor/SecurityInterceptor.java b/basicSpringRESTTmpl/src/main/java/com/jsc/javageeks/interceptor/SecurityInterceptor.java[m
+[1mindex e31358c..c0b7ccc 100644[m
+[1m--- a/basicSpringRESTTmpl/src/main/java/com/jsc/javageeks/interceptor/SecurityInterceptor.java[m
+[1m+++ b/basicSpringRESTTmpl/src/main/java/com/jsc/javageeks/interceptor/SecurityInterceptor.java[m
+[36m@@ -1,21 +1,29 @@[m
+ package com.jsc.javageeks.interceptor;[m
+ [m
+[32m+[m[32mimport java.util.StringTokenizer;[m
+[32m+[m
+ import javax.servlet.http.HttpServletRequest;[m
+ import javax.servlet.http.HttpServletResponse;[m
+ [m
+[32m+[m[32mimport org.apache.commons.codec.binary.Base64;[m
+ import org.springframework.web.servlet.handler.

@@ -6,8 +6,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jsc.javageeks.model.ErrorResponse;
 
 @ControllerAdvice
@@ -16,17 +14,17 @@ public class GlobalExceptionHander /* extends ResponseEntityExceptionHandler */{
 	@ExceptionHandler(value = NotAuthenticateException.class)
 	public ResponseEntity<ErrorResponse> handleNotAutenticatedException(
 			NotAuthenticateException ex) {
-		ErrorResponse errorMessage = new ErrorResponse("FORBIDDEN",
+		ErrorResponse errorMessage = new ErrorResponse("UNAUTHORIZED",
 				ex.getMessage());
 		return new ResponseEntity<ErrorResponse>(errorMessage,
-				HttpStatus.FORBIDDEN);
+				HttpStatus.UNAUTHORIZED);
 	}
 
 	@ExceptionHandler(value = NullPointerException.class)
 	public ResponseEntity<ErrorResponse> handleNULLPointerException(
 			NullPointerException ex) {
 		ErrorResponse errorMessage = new ErrorResponse("Something went wrong",
-				ex.getMessage());
+				"Null Pointer");
 		return new ResponseEntity<ErrorResponse>(errorMessage,
 				HttpStatus.INTERNAL_SERVER_ERROR);
 	}
